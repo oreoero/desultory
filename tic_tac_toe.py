@@ -1,3 +1,4 @@
+# https://www.neverstopbuilding.com/blog/2013/12/13/tic-tac-toe-understanding-the-minimax-algorithm13/
 import sys
 from copy import deepcopy
 
