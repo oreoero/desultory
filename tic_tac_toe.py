@@ -4,10 +4,13 @@ from copy import deepcopy
 
 
 class Board(object):
-    def __init__(self):
-        self.grid = []
-        for i in range(3):
-            self.grid.append(['', '', ''])
+    def __init__(self, grid = None):
+        if grid is None:
+            self.grid = []
+            for i in range(3):
+                self.grid.append(['', '', ''])
+        else:
+            self.grid = grid
 
     def move(self, mark, row, column):
         row = int(row)
@@ -28,6 +31,15 @@ class Board(object):
                     available_moves.append([i, j])
 
         return available_moves
+
+    def has_ended(self):
+        return self.is_board_full() or self.check_winner()
+
+    def is_board_full(self):
+        for row in self.grid:
+            if '' in row:
+                return False
+        return True
 
     def check_winner(self):
         if self.grid[0][0] == self.grid[0][1] == self.grid[0][2] == 'x' or \
@@ -103,7 +115,7 @@ class AI(object):
         return self.DRAW_SCORE_VALUE
 
     def run_minimax_algo(self, board, player, is_player_turn, depth):
-        if board.check_winner() is not None:
+        if board.has_ended() is not None:
             return self.score(board, player, depth)
 
         possible_outcomes = {}
@@ -140,12 +152,15 @@ class GameController(object):
         self.ai = AI()
 
     def start_game(self):
-        while not self.board.check_winner():
+        while not self.board.has_ended():
             self.board.print()
             valid_user_input = self.get_valid_user_input()
             row = valid_user_input[0]
             column = valid_user_input[1]
             self.human_player.move(self.board, row, column)
+
+            if self.board.has_ended():
+                break
 
             self.ai.run_minimax_algo(self.board, self.computer_player, True, 0)
             print(self.ai.suggested_move)
